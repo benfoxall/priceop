@@ -9,7 +9,7 @@
     }
     svg {
       /*border: 1px solid #08f;*/
-      display: none;
+      /*display: none;*/
     }
     .line, .line2{
       fill: transparent;
@@ -236,7 +236,7 @@
       var _height = height + margin.top + margin.bottom;
 
       var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera( 20, _width/_height, 0.1, 1000 );
+      var camera = new THREE.PerspectiveCamera( 40, _width/_height, 0.1, 1000 );
 
       var renderer = new THREE.WebGLRenderer();
       renderer.setSize( _width, _height );
@@ -252,9 +252,10 @@
 
 
       var geometry = new THREE.ParametricGeometry( function(x, y){
-        // console.log(x, y)
-        return new THREE.Vector3( Math.random()-.5, Math.random()-.5, Math.random()-.5 );
-      }, 10, 10 );
+
+        return new THREE.Vector3( x, y, (Pi1((x*140)+100) + Pi2((y*140)+100))/500 );
+
+      }, 40, 40 );
       // var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
       var point, face, numberOfSides;
@@ -263,7 +264,7 @@
       {
         point = geometry.vertices[ i ];
         color = new THREE.Color( 0x0000ff );
-        color.setHSL( Math.random(), 1, 0.5 );
+        color.setHSL( point.z*4, 1, 0.5 );
         geometry.colors[i] = color; // use this array for convenience
       }
 
@@ -287,15 +288,22 @@
 
       camera.position.z = 5;
 
+
+
+      surface.rotation.x = 30;
+      surface.position.x = -.5;
+
       var render = function () {
         requestAnimationFrame( render );
 
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
+        // cube.rotation.x += 0.01;
+        // cube.rotation.y += 0.01;
 
         
-        surface.rotation.x += 0.01;
-        surface.rotation.y += 0.01;
+        // surface.rotation.x += 0.01;
+        // surface.rotation.y += 0.01;
+        
+        surface.rotation.z += 0.01;
 
         renderer.render(scene, camera);
       };
