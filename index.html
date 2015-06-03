@@ -10,10 +10,13 @@
     svg {
       border: 1px solid #08f;
     }
-    .line{
+    .line, .line2{
       fill: transparent;
       stroke: #08f;
       stroke-width:2;
+    }
+    .line2{
+      stroke: #f08;
     }
   </style>
 </head>
@@ -34,10 +37,23 @@
       return Math.exp(10-0.05*x)/(1+Math.exp(10-0.05*x))
     }
 
+
+    function demand2(x) {
+      return Math.exp(8-0.048*x)/(1+Math.exp(8-0.048*x))
+    }
+
+
     var series1 = d3.range(100,240).map(function(x){
       return {
         x:x,
         y:demand1(x)
+      }
+    });
+
+    var series2 = d3.range(100,240).map(function(x){
+      return {
+        x:x,
+        y:demand2(x)
       }
     });
 
@@ -53,12 +69,17 @@
       .x(function(d) { return x(d.x); })
       .y(function(d) { return y(d.y); });
 
-    x.domain(d3.extent(series1, function(d) { return d.x; }));
-    y.domain(d3.extent(series1, function(d) { return d.y; }));
+    x.domain(d3.extent(series1.concat(series2), function(d) { return d.x; }));
+    y.domain(d3.extent(series1.concat(series2), function(d) { return d.y; }));
 
     svg.append("path")
       .datum(series1)
       .attr("class", "line")
+      .attr("d", line);
+
+    svg.append("path")
+      .datum(series2)
+      .attr("class", "line2")
       .attr("d", line);
 
   </script>
