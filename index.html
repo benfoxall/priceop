@@ -10,20 +10,57 @@
     svg {
       border: 1px solid #08f;
     }
+    .line{
+      fill: transparent;
+      stroke: #08f;
+      stroke-width:2;
+    }
   </style>
 </head>
 <body>
-<h1>Priceop</h1>
+  <h1>Priceop</h1>
 
-<script type="text/javascript" src="bower_components/d3/d3.js"></script>
-<script type="text/javascript">
-  var width = 500,
-      height = 500;
+  <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+  <script type="text/javascript">
+    var width = 500,
+        height = 500;
 
-  var svg = d3.select('body').append('svg')
-    .attr('width', width)
-    .attr('height', height);
+    var svg = d3.select('body').append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
-</script>
+
+    function demand1(x) {
+      return Math.exp(10-0.05*x)/(1+Math.exp(10-0.05*x))
+    }
+
+    var series1 = d3.range(100,240).map(function(x){
+      return {
+        x:x,
+        y:demand1(x)
+      }
+    });
+
+
+    var x = d3.scale.linear()
+      .range([0, width]);
+
+    var y = d3.scale.linear()
+      .range([height, 0]);
+
+
+    var line = d3.svg.line()
+      .x(function(d) { return x(d.x); })
+      .y(function(d) { return y(d.y); });
+
+    x.domain(d3.extent(series1, function(d) { return d.x; }));
+    y.domain(d3.extent(series1, function(d) { return d.y; }));
+
+    svg.append("path")
+      .datum(series1)
+      .attr("class", "line")
+      .attr("d", line);
+
+  </script>
 </body>
 </html>
