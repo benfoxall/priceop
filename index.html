@@ -53,6 +53,10 @@
       return Math.exp(8-0.048*x)/(1+Math.exp(8-0.048*x))
     }
 
+    function demand2Inv(x) {
+      return (8-Math.log(x/(1-x))) / 0.048;
+    }
+
 
     var series1 = d3.range(100,240).map(function(x){
       return {
@@ -270,8 +274,10 @@
       var scene = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera( 25, _width/_height, 0.1, 1000 );
 
-      var renderer = new THREE.WebGLRenderer({antialiasing: true});
+      var renderer = new THREE.WebGLRenderer({antialias: true});
       renderer.setSize( _width, _height );
+      renderer.setClearColor( 0xffffff );
+
       document.body.appendChild( renderer.domElement );
 
       var geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -317,7 +323,20 @@
 
       var material = new THREE.MeshBasicMaterial( {vertexColors: THREE.VertexColors, side:THREE.DoubleSide })
 
-      var surface = new THREE.Mesh( geometry, material );
+      var wireTexture = new THREE.ImageUtils.loadTexture( 'images/square.png' );
+      wireTexture.wrapS = wireTexture.wrapT = THREE.RepeatWrapping; 
+      wireTexture.repeat.set( 40, 40 );
+      wireMaterial = new THREE.MeshBasicMaterial( { 
+        // map: wireTexture, 
+        vertexColors: THREE.VertexColors, 
+        side:THREE.DoubleSide,
+        alphaMap: wireTexture,
+        transparent: true
+      } );
+
+  
+
+      var surface = new THREE.Mesh( geometry, wireMaterial );
       scene.add( surface );
 
 
@@ -327,15 +346,42 @@
       // draw a line
       var material = new THREE.LineBasicMaterial({
           color: 0x0000ff,
-          linewidth: 3
+          linewidth: 1
       });
 
       var geometry = new THREE.Geometry();
 
-      d3.range(0,100).forEach(function(i){
+      d3.range(-.1,.9,.005).forEach(function(x){
 
+        // (x*140)+100
+        x = (x*140)+100;
+        var d1 = demand1(x);
+        var d2 = 1.2-d1;
+        var y  = demand2Inv(d2);
+
+
+        var xs = (x-100)/140;
+        var ys = (y-100)/140;
+
+
+        // var y = ((8 - Math.log(1.2 - demand1((x*140)+10))) / 0.048);
+        var p = 
+        new THREE.Vector3(
+          xs - .5,
+          ys - .5,
+          // 0
+          (Pi1((xs*140)+100) + Pi2((ys*140)+100))/500
+        );
+
+
+        // if(xs < 0) return;
+        // if(ys < 0) return;
+        // if(((Pi1((xs*140)+100) + Pi2((ys*140)+100))/500) < .) return;
+
+        // var p = pointGenerator(i/100, i/100);
+        // p.z+=.01
         geometry.vertices.push(
-          pointGenerator(i/100, i/100)
+          p  
         );
 
         // geometry.vertices.push(new THREE.Vector3(-1, 0, 0));
