@@ -232,13 +232,45 @@
 
   <script> 
 
+
+      THREE.AxisHelper = function ( size ) {
+
+        size = size || 1;
+
+        var vertices = new Float32Array( [
+          -.5, -.5, 0,  size-.5, -.5, 0,
+          -.5, -.5, 0,  -.5, size-.5, 0,
+          -.5, -.5, 0,  -.5, -.5, size
+        ] );
+
+        var colors = new Float32Array( [
+          1, 0, 0,  1, 0.6, 0,
+          0, 1, 0,  0.6, 1, 0,
+          0, 0, 1,  0, 0.6, 1
+        ] );
+
+        var geometry = new THREE.BufferGeometry();
+        geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+        geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+
+        var material = new THREE.LineBasicMaterial( { vertexColors: THREE.VertexColors } );
+
+        THREE.Line.call( this, geometry, material, THREE.LinePieces );
+
+      };
+
+      THREE.AxisHelper.prototype = Object.create( THREE.Line.prototype );
+      THREE.AxisHelper.prototype.constructor = THREE.AxisHelper;
+
+
+
       var _width = width + margin.left + margin.right;
       var _height = height + margin.top + margin.bottom;
 
       var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera( 40, _width/_height, 0.1, 1000 );
+      var camera = new THREE.PerspectiveCamera( 25, _width/_height, 0.1, 1000 );
 
-      var renderer = new THREE.WebGLRenderer();
+      var renderer = new THREE.WebGLRenderer({antialiasing: true});
       renderer.setSize( _width, _height );
       document.body.appendChild( renderer.domElement );
 
@@ -250,12 +282,14 @@
 
       //ParametricGeometry
 
+      function pointGenerator(x, y){
 
-      var geometry = new THREE.ParametricGeometry( function(x, y){
+        return new THREE.Vector3( x-.5, y-.5, (Pi1((x*140)+100) + Pi2((y*140)+100))/500 );
 
-        return new THREE.Vector3( x, y, (Pi1((x*140)+100) + Pi2((y*140)+100))/500 );
+      }
 
-      }, 40, 40 );
+
+      var geometry = new THREE.ParametricGeometry( pointGenerator, 40, 40 );
       // var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
       var point, face, numberOfSides;
@@ -264,7 +298,7 @@
       {
         point = geometry.vertices[ i ];
         color = new THREE.Color( 0x0000ff );
-        color.setHSL( point.z*4, 1, 0.5 );
+        color.setHSL( point.z*4, 1, .8  );
         geometry.colors[i] = color; // use this array for convenience
       }
 
@@ -286,12 +320,54 @@
       var surface = new THREE.Mesh( geometry, material );
       scene.add( surface );
 
-      camera.position.z = 5;
 
+
+
+
+      // draw a line
+      var material = new THREE.LineBasicMaterial({
+          color: 0x0000ff,
+          linewidth: 3
+      });
+
+      var geometry = new THREE.Geometry();
+
+      d3.range(0,100).forEach(function(i){
+
+        geometry.vertices.push(
+          pointGenerator(i/100, i/100)
+        );
+
+        // geometry.vertices.push(new THREE.Vector3(-1, 0, 0));
+
+      })
+
+      var line = new THREE.Line(geometry, material);
+
+      scene.add(line);
+
+
+
+      var axisHelper = new THREE.AxisHelper( 1 );
+      scene.add( axisHelper );
+
+
+      camera.position.z = 4;
+      camera.lookAt(new THREE.Vector3(-.5,.5,0))
 
 
       surface.rotation.x = 30;
       surface.position.x = -.5;
+
+
+      line.rotation.x = 30;
+      line.position.x = -.5;
+
+
+      axisHelper.rotation.x = 30;
+      axisHelper.position.x = -.5;
+      // axisHelper.position.z = -.5;
+
 
       var render = function () {
         requestAnimationFrame( render );
@@ -302,8 +378,11 @@
         
         // surface.rotation.x += 0.01;
         // surface.rotation.y += 0.01;
-        
+
         surface.rotation.z += 0.01;
+        line.rotation.z += 0.01;
+
+        axisHelper.rotation.z += 0.01;
 
         renderer.render(scene, camera);
       };
