@@ -271,6 +271,8 @@
       var _width = width + margin.left + margin.right;
       var _height = height + margin.top + margin.bottom;
 
+
+      var group = new THREE.Object3D();
       var scene = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera( 25, _width/_height, 0.1, 1000 );
 
@@ -280,9 +282,9 @@
 
       document.body.appendChild( renderer.domElement );
 
-      var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-      var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-      var cube = new THREE.Mesh( geometry, material );
+      // var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+      // var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+      // var cube = new THREE.Mesh( geometry, material );
       // scene.add( cube );
 
 
@@ -337,7 +339,7 @@
   
 
       var surface = new THREE.Mesh( geometry, wireMaterial );
-      scene.add( surface );
+      group.add( surface );
 
 
 
@@ -349,7 +351,7 @@
           linewidth: 1
       });
 
-      var geometry = new THREE.Geometry();
+      var line_geometry = new THREE.Geometry();
 
       d3.range(-.1,.9,.005).forEach(function(x){
 
@@ -380,55 +382,56 @@
 
         // var p = pointGenerator(i/100, i/100);
         // p.z+=.01
-        geometry.vertices.push(
+        line_geometry.vertices.push(
           p  
         );
 
-        // geometry.vertices.push(new THREE.Vector3(-1, 0, 0));
+        // line_geometry.vertices.push(new THREE.Vector3(-1, 0, 0));
 
       })
 
-      var line = new THREE.Line(geometry, material);
+      var line = new THREE.Line(line_geometry, material);
 
-      scene.add(line);
+      group.add(line);
+
+
+
+
+      var geometry = new THREE.SphereGeometry( .01, .01, .01 );
+      var material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+      var sphere = new THREE.Mesh( geometry, material );
+      group.add( sphere );
+
 
 
 
       var axisHelper = new THREE.AxisHelper( 1 );
-      scene.add( axisHelper );
+      group.add( axisHelper );
 
 
       camera.position.z = 4;
       camera.lookAt(new THREE.Vector3(-.5,.5,0))
 
 
-      surface.rotation.x = 30;
-      surface.position.x = -.5;
+
+      group.rotation.x = 30;
+      group.position.x = -.5;
+
+      scene.add(group);
 
 
-      line.rotation.x = 30;
-      line.position.x = -.5;
-
-
-      axisHelper.rotation.x = 30;
-      axisHelper.position.x = -.5;
-      // axisHelper.position.z = -.5;
-
+      var j = 0;
 
       var render = function () {
         requestAnimationFrame( render );
+        j++;
+        j = j % line_geometry.vertices.length;
 
-        // cube.rotation.x += 0.01;
-        // cube.rotation.y += 0.01;
+        sphere.position.x = line_geometry.vertices[j].x
+        sphere.position.y = line_geometry.vertices[j].y
+        sphere.position.z = line_geometry.vertices[j].z
 
-        
-        // surface.rotation.x += 0.01;
-        // surface.rotation.y += 0.01;
-
-        surface.rotation.z += 0.01;
-        line.rotation.z += 0.01;
-
-        axisHelper.rotation.z += 0.01;
+        group.rotation.z += 0.01;
 
         renderer.render(scene, camera);
       };
