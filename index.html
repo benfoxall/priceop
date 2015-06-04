@@ -40,11 +40,33 @@
   </style>
 </head>
 <body>
-  <h1>Priceop</h1>
+  <script type="text/javascript" src="bower_components/Mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+  <h1>Price Op</h1>
+
+  <ul>
+    <li>In the UK there is very little regulation on the premiums we can charge</li>
+    <li>This allows us to take a different approach to setting our premiums which doesn't just rely on the risk</li>
+    <li>The approach we take is to look at the customer's buying behaviour, specifically their price elasticity</li>
+  </ul>
+  <ul>
+    <li>We implement a random price trial assigning people high and low prices</li>
+    <li>Using this data we can estimate customer $demand$ (the probability that someone will buy)</li>
+    <li>$demand$ is estimated using logistic regression so will take the form</li>
+    $$\frac{y}{1-y} = \beta_0 + \beta_1x_1 +...+\beta_nx_n$$
+    <li>In insurance, this will use the usual rating factors along with the most important variable, the premium</li>
+    $$Demand = \beta_0 + \beta_1age + \beta_2mileage + \beta_3premium +...+\beta_nx_n$$
+  </ul>
+  <ul>
+    <li>We can look at this demand curve for an individual</li>
+
 
   <script type="text/javascript" src="bower_components/d3/d3.js"></script>
   <script type="text/javascript" src="bower_components/threejs/build/three.js"></script>
   <script type="text/javascript" src="bower_components/tweenjs/build/tween.min.js"></script>
+  
   <script type="text/javascript">
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
         width = 500 - margin.left - margin.right,
