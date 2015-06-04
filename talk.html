@@ -28,12 +28,15 @@
         <section>
           <h1>Section 2 - Slide two</h1>
         </section>
+        <section id="foo">
+          FOO
+        </section>
       </section>
     </div>
   </div>
 
-  <fn src="bower_components/reveal.js/lib/js/head.min.js"></fn>
   <script src="bower_components/reveal.js/js/reveal.js"></script>
+  <script src="dynamic-slide.js"></script>
 
   <script>
     Reveal.initialize({
@@ -43,6 +46,31 @@
       transition: 'slide',
       transitionSpeed: 'fast',
     });
+
+
+    var slide_el = document.getElementById('foo');
+    var slide = new DynamicSlide(slide_el);
+
+    slide.addEventListener('shown', function(){
+      console.log("SHOW")
+    })
+
+    slide.addEventListener('hidden', function(){
+      console.log("hidden")
+    })
+
+    slide.fragments([
+      function(){
+        console.log("FRAGMENT 1")
+      },
+      function(){
+        alert("FRAGMENT 2")
+      },
+      function(){
+        console.log("FRAGMENT 3")
+      }
+    ])
+
   </script>
 </body>
 </html>
