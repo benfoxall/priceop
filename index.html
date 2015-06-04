@@ -44,6 +44,7 @@
 
   <script type="text/javascript" src="bower_components/d3/d3.js"></script>
   <script type="text/javascript" src="bower_components/threejs/build/three.js"></script>
+  <script type="text/javascript" src="bower_components/tweenjs/build/tween.min.js"></script>
   <script type="text/javascript">
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
         width = 500 - margin.left - margin.right,
@@ -227,43 +228,6 @@
 
 
 
-
-
-    // // part 2
-    // var line2 = d3.svg.line()
-    //   .x(function(d) { return x(d.x); })
-    //   .y(function(d) { return y(d.y)/2; });
-
-
-    // function next(){
-
-    //   y_axis.selectAll('.tick')
-    //     .transition()
-    //     .attr('transform',function(d){return 'translate(0,'+y(d)/2+')'})
-    //     .duration(1000)
-
-    //   x_axis
-    //     .transition()
-    //     .attr("transform", "translate(0.5," + ((height/2) + 0.5) + ")")
-    //     .duration(1000)
-
-    //   path1.transition().attr('d', line2).duration(1000)
-    //   path2.transition().attr('d', line2).duration(1000)
-
-    // }
-
-
-    // path1.transition().attr('d', line2).duration(3000)
-    // path2.transition().attr('d', line2).duration(3000)
-
-
-
-  </script>
-
-
-  <script> 
-
-
       THREE.AxisHelper = function ( size ) {
 
         size = size || 1;
@@ -313,13 +277,6 @@
 
       document.body.appendChild( renderer.domElement );
 
-      // var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-      // var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-      // var cube = new THREE.Mesh( geometry, material );
-      // scene.add( cube );
-
-
-      //ParametricGeometry
 
       function pointGenerator(x, y){
 
@@ -329,7 +286,6 @@
 
 
       var geometry = new THREE.ParametricGeometry( pointGenerator, 40, 40 );
-      // var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
       var point, face, numberOfSides;
 
@@ -360,7 +316,6 @@
       wireTexture.wrapS = wireTexture.wrapT = THREE.RepeatWrapping; 
       wireTexture.repeat.set( 40, 40 );
       wireMaterial = new THREE.MeshBasicMaterial( { 
-        // map: wireTexture, 
         vertexColors: THREE.VertexColors, 
         side:THREE.DoubleSide,
         alphaMap: wireTexture,
@@ -458,12 +413,29 @@
       scene.add(group);
 
 
-      var j = 0;
+      // var rotate = { z: 0, y: 0 };
+      // var tween = new TWEEN.Tween( rotate )
+      //       .to( { z: 3, y: 1 }, 15000 )
+      //       .repeat(Infinity)
+      //       .yoyo(true)
+      //       .easing( TWEEN.Easing.Quadratic.InOut )
+      //       .start();
 
-      var render = function () {
+
+
+      // how long the ball takes to move (millis)
+      var ballduration = 7000;
+
+      var render = function (now) {
+        TWEEN.update(now)
+
         requestAnimationFrame( render );
-        j++;
-        j = j % line_geometry.vertices.length;
+
+
+        var progress = (now/ballduration)%1;
+
+        var j = ~~(progress * line_geometry.vertices.length);
+
 
         sphere.position.x = line_geometry.vertices[j].x
         sphere.position.y = line_geometry.vertices[j].y
@@ -477,12 +449,15 @@
 
         // guide1.attr({x1: x((x-100)/140),x2: x((x-100)/140)})
 
-        group.rotation.z += 0.01;
+        group.rotation.z += 0.005;
+
+        // group.rotation.z = rotate.z;
+        // group.rotation.y = rotate.y;
 
         renderer.render(scene, camera);
       };
 
-      render();
+      requestAnimationFrame(render);
     </script>
 
 </body>
