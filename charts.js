@@ -178,10 +178,21 @@ function Chart(element){
     .attr("transform", "translate(.5,.5)")
     .call(yAxis2);
 
+
+
+
+  this.showGuides = function(datum){
+    guide1.attr('x1', x(datum.x))
+    guide1.attr('x2', x(datum.x))
+
+    guide2.attr('x1', x(datum.y))
+    guide2.attr('x2', x(datum.y))
+  }
+
 }
 
 
-function Chart3d(element){
+function Chart3d(element, firstChart){
 
 
   THREE.AxisHelper = function ( size ) {
@@ -397,11 +408,7 @@ function Chart3d(element){
     sphere.position.y = line_geometry.vertices[j].y
     sphere.position.z = line_geometry.vertices[j].z
 
-    // guide1.attr('x1', x(line_geometry.datum[j].x))
-    // guide1.attr('x2', x(line_geometry.datum[j].x))
-
-    // guide2.attr('x1', x(line_geometry.datum[j].y))
-    // guide2.attr('x2', x(line_geometry.datum[j].y))
+    firstChart.showGuides(line_geometry.datum[j]);
 
 
     group.rotation.z += 0.005;
