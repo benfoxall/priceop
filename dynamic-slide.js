@@ -23,10 +23,11 @@
     currentSlide = event.currentSlide;
   });
 
-  Reveal.addEventListener( 'ready', function( event ) {
-    if(event.currentSlide)  event.currentSlide.dispatchEvent(shown);
-    currentSlide = event.currentSlide;
-  });
+  // Reveal now does this automatically
+  // Reveal.addEventListener( 'ready', function( event ) {
+  //   if(event.currentSlide)  event.currentSlide.dispatchEvent(shown);
+  //   currentSlide = event.currentSlide;
+  // });
 
 
   function DynamicSlide(element){

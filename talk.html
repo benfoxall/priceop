@@ -6,6 +6,64 @@
 
   <link rel="stylesheet" href="bower_components/reveal.js/css/reveal.css">
   <link rel="stylesheet" href="bower_components/reveal.js/css/theme/black.css" id="theme">
+  <style type="text/css">
+
+    text {
+      font-family: sans-serif;
+      color:#fff;
+      -webkit-font-smoothing: antialiased;
+      font-family: 'Source Sans Pro', Helvetica, sans-serif;
+    }
+    svg {
+      /*border: 1px solid #08f;*/
+      /*display: none;*/
+      font-family: 'Source Sans Pro', Helvetica, sans-serif;
+    }
+    text{
+      fill:#fff;
+      font-size: 15px;
+    }
+    .line, .line2{
+      fill: transparent;
+      stroke: #08f;
+      stroke-width:2;
+    }
+    .line2{
+      stroke: #f08;
+    }
+
+    .axis path,.axis line{
+      fill:none;
+      stroke:#fff;
+      stroke-width:1;
+    }
+
+    .guide1{
+      fill:none;
+      stroke: #08f;
+      stroke-width:2;
+    }
+
+    .guide2{
+      fill:none;
+      stroke: #f08;
+      stroke-width:2;
+    }
+
+
+
+
+    #target {
+      position: relative;
+      width: 960px;
+      height: 700px;
+    }
+    #target > div,
+    #target svg, 
+    #target canvas {
+      position: absolute;
+    } 
+  </style>
 
 </head>
 <body>
@@ -28,12 +86,21 @@
         <section>
           <h1>Section 2 - Slide two</h1>
         </section>
-        <section id="foo">
-          FOO
+        <section id="charts">
+          <div id="target">
+            <div id="3d"></div>
+            <div id="2d"></div>
+          </div>
         </section>
       </section>
     </div>
   </div>
+
+  <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+  <script type="text/javascript" src="bower_components/threejs/build/three.js"></script>
+  <script type="text/javascript" src="bower_components/tweenjs/build/tween.min.js"></script>
+  <script type="text/javascript" src="charts.js"></script>
+
 
   <script src="bower_components/reveal.js/js/reveal.js"></script>
   <script src="dynamic-slide.js"></script>
@@ -48,11 +115,18 @@
     });
 
 
-    var slide_el = document.getElementById('foo');
+    var slide_el = document.getElementById('charts');
+
     var slide = new DynamicSlide(slide_el);
 
+    var rendered = false;
+
+    var chart, chart3d;
+
     slide.addEventListener('shown', function(){
-      console.log("SHOW")
+      if(rendered) return;
+      chart   = new Chart(document.getElementById('2d'));
+      chart3d = new Chart3d(document.getElementById('3d'), chart);
     })
 
     slide.addEventListener('hidden', function(){
@@ -60,15 +134,59 @@
     })
 
     slide.fragments([
+
       function(){
-        console.log("FRAGMENT 1")
+        chart._first();
       },
+
       function(){
-        alert("FRAGMENT 2")
+        chart._series_first();
       },
+
       function(){
-        console.log("FRAGMENT 3")
+        chart._series_both();
+      },
+
+      function(){
+        chart._series_first();
+      },
+
+      function(){
+        chart._both();
+      },
+
+      function(){
+        chart._series_both();
+      },
+
+      function(){
+        chart._left();
+      },
+
+
+      // 3d stuff
+
+      function(){
+        chart3d._show()
+      },
+
+      function(){
+        chart3d._surface()
+      },
+
+      function(){
+        chart3d._line()
+      },
+
+      function(){
+        chart3d._point()
+      },
+
+      function(){
+        chart._showGuides();
       }
+
+
     ])
 
   </script>
