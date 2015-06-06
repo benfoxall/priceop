@@ -4,12 +4,21 @@
   <meta charset="utf-8">
   <title>PriceOp</title>
   <style type="text/css">
+    @import url(bower_components/reveal.js/lib/font/source-sans-pro/source-sans-pro.css);
+
     body, text {
       font-family: sans-serif;
+      background: #222;
+      color:#fff;
+      -webkit-font-smoothing: antialiased;
+      font-family: 'Source Sans Pro', Helvetica, sans-serif;
     }
     svg {
       /*border: 1px solid #08f;*/
       /*display: none;*/
+    }
+    text{
+      fill:#fff;
     }
     .line, .line2{
       fill: transparent;
@@ -22,7 +31,7 @@
 
     .axis path,.axis line{
       fill:none;
-      stroke:#000;
+      stroke:#fff;
       stroke-width:1;
     }
 
@@ -76,6 +85,8 @@
     var chart   = new Chart(document.getElementById('target'));
 
     var chart3d = new Chart3d(document.getElementById('target'), chart);
+
+    chart.showFirst();
 
   </script>
 

@@ -22,12 +22,11 @@ function Pi2(x) {
   return demand2(x) * x;
 }
 
-
 function Chart(element){
 
   var margin = {top: 20, right: 20, bottom: 30, left: 50},
-      width = 500 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+      width = 960 - margin.left - margin.right,
+      height = 700 - margin.top - margin.bottom;
 
   var svg = d3.select(element).append('svg')
       .attr("width", width + margin.left + margin.right)
@@ -191,6 +190,9 @@ function Chart(element){
 
 }
 
+Chart.prototype.showFirst = function(){
+
+}
 
 function Chart3d(element, firstChart){
 
@@ -208,7 +210,8 @@ function Chart3d(element, firstChart){
     var colors = new Float32Array( [
       0, .53, 1,   0, .53, 1,  // g
       1,  0,  .53, 1,  0,  .53, // r
-      0, 0,   0,   0, 0, 0    // b
+      1, 1,   1,   1, 1, 1    // b
+      // 0, 0,   0,   0, 0, 0    // b
 
       // 1, 0, 0,  1, 0, 0, // r
       // 0, 1, 0,  0.6, 1, 0, // g
@@ -230,8 +233,8 @@ function Chart3d(element, firstChart){
 
 
 
-  var _width = 500;
-  var _height = 500;
+  var _width = 960;
+  var _height = 700;
 
 
   var group = new THREE.Object3D();
@@ -240,7 +243,7 @@ function Chart3d(element, firstChart){
 
   var renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setSize( _width, _height );
-  renderer.setClearColor( 0xffffff );
+  renderer.setClearColor( 0x222222 );
 
   element.appendChild( renderer.domElement );
 
