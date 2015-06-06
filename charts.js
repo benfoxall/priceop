@@ -25,14 +25,17 @@ function Pi2(x) {
 function Chart(element){
 
   var margin = {top: 20, right: 20, bottom: 30, left: 50},
-      width = 960 - margin.left - margin.right,
-      height = 700 - margin.top - margin.bottom;
+      width  = this.width  = 960 - margin.left - margin.right,
+      height = this.height = 700 - margin.top - margin.bottom;
 
-  var svg = d3.select(element).append('svg')
+  var svg = this.svg = d3.select(element).append('svg')
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+  var graph1 = this.graph1 = svg.append('g');
 
 
   var guide1 = svg.append('line')
@@ -84,12 +87,12 @@ function Chart(element){
   // y.domain(d3.extent(series1.concat(series2), function(d) { return d.y; }));
   y.domain([0,1]);
 
-  var path1 = svg.append("path")
+  var path1 = graph1.append("path")
     .datum(series1)
     .attr("class", "line")
     .attr("d", line);
 
-  var path2 = svg.append("path")
+  var path2 = graph1.append("path")
     .datum(series2)
     .attr("class", "line2")
     .attr("d", line);
@@ -105,15 +108,23 @@ function Chart(element){
     .orient("left");
 
 
-  var x_axis = svg.append("g")
+  var x_axis = graph1.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0.5," + (height/2 + 0.5 - 20) + ")")
     .call(xAxis);
 
-  var y_axis = svg.append("g")
+  var y_axis = graph1.append("g")
     .attr("class", "y axis")
     .attr("transform", "translate(.5,.5)")
     .call(yAxis);
+
+
+
+
+  // Second graph
+
+  var graph2 = this.graph2 = svg.append('g');
+
 
   var series12 = d3.range(100,240).map(function(x){
     return {
@@ -146,12 +157,12 @@ function Chart(element){
     .y(function(d) { return y2(d.y); });
 
 
-  var path12 = svg.append("path")
+  var path12 = graph2.append("path")
     .datum(series12)
     .attr("class", "line")
     .attr("d", line2);
 
-  var path22 = svg.append("path")
+  var path22 = graph2.append("path")
     .datum(series22)
     .attr("class", "line2")
     .attr("d", line2);
@@ -167,12 +178,12 @@ function Chart(element){
     .orient("left");
 
 
-  var x_axis2 = svg.append("g")
+  var x_axis2 = graph2.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0.5," + (height + 0.5) + ")")
     .call(xAxis2);
 
-  var y_axis2 = svg.append("g")
+  var y_axis2 = graph2.append("g")
     .attr("class", "y axis")
     .attr("transform", "translate(.5,.5)")
     .call(yAxis2);
@@ -181,18 +192,70 @@ function Chart(element){
 
 
   this.showGuides = function(datum){
-    guide1.attr('x1', x(datum.x))
-    guide1.attr('x2', x(datum.x))
+    // guide1.attr('x1', x(datum.x))
+    // guide1.attr('x2', x(datum.x))
+    guide1.attr('transform', 'scale(0.3, 1) translate(' + x(datum.x) + ', 0)')
+    guide2.attr('transform', 'scale(0.3, 1) translate(' + x(datum.y) + ', 0)')
 
-    guide2.attr('x1', x(datum.y))
-    guide2.attr('x2', x(datum.y))
+    // guide2.attr('x1', x(datum.y))
+    // guide2.attr('x2', x(datum.y))
+
   }
 
+
+  // HIDE EVERYTHING 
+
+  graph1.attr('transform', 'translate('+width/2+','+height/2+') scale(0)')
+  graph2.attr('transform', 'translate('+width/2+','+height/2+') scale(0)')
+
+
+  // hide lines initially
+  svg.selectAll('.line, .line2, .guide1, .guide2').style('opacity',0);
+
+  //
+  svg.selectAll('.guide1, .guide2').attr('transform', 'scale(0.3, 1)')
+
 }
 
-Chart.prototype.showFirst = function(){
-
+Chart.prototype._series_first = function(){
+  this.svg.selectAll('.line').transition().style('opacity',1)
+  this.svg.selectAll('.line2').transition().style('opacity',0)
 }
+
+Chart.prototype._series_both = function(){
+  this.svg.selectAll('.line').transition().style('opacity',1)
+  this.svg.selectAll('.line2').transition().style('opacity',1)
+}
+
+
+
+Chart.prototype._first = function(){
+  this.graph1.transition().attr('transform', 'translate(0, 200) scale(1)').duration(1500)
+  this.graph2.transition().attr('transform', 'translate('+this.width/2+','+this.height/2+') scale(0)').duration(1500)
+}
+
+Chart.prototype._both = function(){
+  this.graph1.transition().attr('transform', 'translate(0, 0) scale(1)').duration(1500)
+  this.graph2.transition().attr('transform', 'translate(0, 0) scale(1)').duration(1500)
+}
+
+Chart.prototype._left = function(){
+  this.graph1.transition().attr('transform', 'translate(0, 120) scale(.3)').duration(1500)
+  this.graph2.transition().attr('transform', 'translate(0, 230) scale(.3)').duration(1500)
+}
+
+Chart.prototype._showGuides = function(){
+  this.svg.selectAll('.guide1, .guide2')
+    .style('stroke-width', 7)
+    .style('opacity', 0)
+    .transition()
+    .style('opacity',.4)
+    .duration(1500)
+}
+
+
+
+
 
 function Chart3d(element, firstChart){
 
@@ -285,11 +348,12 @@ function Chart3d(element, firstChart){
   var wireTexture = new THREE.ImageUtils.loadTexture( 'images/square.png' );
   wireTexture.wrapS = wireTexture.wrapT = THREE.RepeatWrapping; 
   wireTexture.repeat.set( 40, 40 );
-  wireMaterial = new THREE.MeshBasicMaterial( { 
+  wireMaterial = this.surfaceMaterial = new THREE.MeshBasicMaterial( { 
     vertexColors: THREE.VertexColors, 
     side:THREE.DoubleSide,
     alphaMap: wireTexture,
-    transparent: true
+    transparent: true,
+    opacity:0.0
   } );
 
 
@@ -302,7 +366,7 @@ function Chart3d(element, firstChart){
 
 
   // draw a line
-  var material = new THREE.LineBasicMaterial({
+  var material = this.lineMaterial = new THREE.LineBasicMaterial({
       color: 0x0000ff,
       linewidth: 1
   });
@@ -361,7 +425,7 @@ function Chart3d(element, firstChart){
 
 
   var geometry = new THREE.SphereGeometry( .01, .01, .01 );
-  var material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+  var material = this.pointMaterial = new THREE.MeshBasicMaterial( {color: 0xff0000} );
   var sphere = new THREE.Mesh( geometry, material );
   group.add( sphere );
 
@@ -374,6 +438,17 @@ function Chart3d(element, firstChart){
 
   camera.position.z = 4;
   camera.lookAt(new THREE.Vector3(-.5,.5,0))
+
+
+  // make it off to the right
+  
+  //{x: -4, y: 0, z: 15}
+
+  camera.position.z = 15;
+  camera.position.x = -4;
+
+  this.camera = camera;
+
 
 
 
@@ -395,6 +470,7 @@ function Chart3d(element, firstChart){
 
   // how long the ball takes to move (millis)
   var ballduration = 7000;
+  var _this = this;
 
   var render = function (now) {
     TWEEN.update(now)
@@ -406,12 +482,18 @@ function Chart3d(element, firstChart){
 
     var j = ~~(progress * line_geometry.vertices.length);
 
+    if(_this.showPoint){    
+      sphere.position.x = line_geometry.vertices[j].x
+      sphere.position.y = line_geometry.vertices[j].y
+      sphere.position.z = line_geometry.vertices[j].z
 
-    sphere.position.x = line_geometry.vertices[j].x
-    sphere.position.y = line_geometry.vertices[j].y
-    sphere.position.z = line_geometry.vertices[j].z
+      firstChart.showGuides(line_geometry.datum[j]);
+    } else {
+      sphere.position.y = -1000;
+    }
 
-    firstChart.showGuides(line_geometry.datum[j]);
+
+    
 
 
     group.rotation.z += 0.005;
@@ -425,4 +507,43 @@ function Chart3d(element, firstChart){
   requestAnimationFrame(render);
 
 
+  // hide everything
+
+  this.surfaceMaterial.opacity = 0;
+  this.lineMaterial.opacity = 0;
+  this.lineMaterial.transparent = true;
+
+  this.pointMaterial.opacity = 0;
+  this.pointMaterial.transparent = true;
+
+  this.showPoint = false;
+
 }
+
+
+Chart3d.prototype._show = function() {
+  new TWEEN.Tween( this.camera.position )
+        .to( { z: 4.5, x: -.4 }, 3000 )
+        .easing( TWEEN.Easing.Quadratic.Out )
+        .start();
+}
+
+Chart3d.prototype._surface = function(){
+  new TWEEN.Tween( this.surfaceMaterial )
+        .to( { opacity: 1 }, 1500 )
+        .start();
+}
+
+Chart3d.prototype._line = function(){
+  new TWEEN.Tween( this.lineMaterial )
+        .to( { opacity: 1 }, 1500 )
+        .start();
+}
+
+Chart3d.prototype._point = function(){
+  this.showPoint = true;
+  new TWEEN.Tween( this.pointMaterial )
+        .to( { opacity: 1 }, 1500 )
+        .start();
+}
+

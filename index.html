@@ -46,6 +46,16 @@
       stroke: #f08;
       stroke-width:2;
     }
+
+    #target {
+      position: relative;
+      width: 960px;
+      height: 700px;
+    }
+    #target svg, 
+    #target canvas {
+      position: absolute;
+    } 
   </style>
 </head>
 <body>
@@ -74,6 +84,8 @@
 
 
   <div id="target">
+    <div id="3d"></div>
+    <div id="2d"></div>
   </div>
 
   <script type="text/javascript" src="bower_components/d3/d3.js"></script>
@@ -82,11 +94,66 @@
   <script type="text/javascript" src="charts.js"></script>
 
   <script type="text/javascript">
-    var chart   = new Chart(document.getElementById('target'));
+    var chart   = new Chart(document.getElementById('2d'));
 
-    var chart3d = new Chart3d(document.getElementById('target'), chart);
+    var chart3d = new Chart3d(document.getElementById('3d'), chart);
 
-    chart.showFirst();
+
+    var t = 0;    
+
+    setTimeout(function(){
+      chart._first();
+    }, t+=500)
+
+    setTimeout(function(){
+      chart._series_first();
+    }, t+=1000)
+
+    setTimeout(function(){
+      chart._series_both();
+    }, t+=1000)
+
+    setTimeout(function(){
+      chart._series_first();
+    }, t+=500)
+
+    setTimeout(function(){
+      chart._both();
+    }, t+=500)
+
+    setTimeout(function(){
+      chart._series_both();
+    }, t+=1000)
+
+    setTimeout(function(){
+      chart._left();
+    }, t+=1500)
+
+
+    // 3d stuff
+
+    setTimeout(function(){
+      chart3d._show()
+    }, t+=1500)
+
+    setTimeout(function(){
+      chart3d._surface()
+    }, t+=3000)
+
+    setTimeout(function(){
+      chart3d._line()
+    }, t+=3000)
+
+    setTimeout(function(){
+      chart3d._point()
+    }, t+=3000)
+
+    setTimeout(function(){
+      chart._showGuides();
+    }, t+=3000)
+
+
+
 
   </script>
 
